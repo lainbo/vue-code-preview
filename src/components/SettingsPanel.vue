@@ -18,6 +18,19 @@
         placeholder="https://cdn.tailwindcss.com
 https://unpkg.com/vue@3/dist/vue.global.js"
       ></textarea>
+      <div class="mt-2 text-xs">
+        <p class="text-gray-500">常用CDN库:</p>
+        <div class="flex flex-wrap gap-1 mt-1">
+          <button 
+            v-for="(cdn, index) in commonCdns" 
+            :key="index"
+            @click="addCdn(cdn.url)"
+            class="px-2 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 rounded text-xs"
+          >
+            {{ cdn.name }}
+          </button>
+        </div>
+      </div>
     </div>
     
     <div class="mb-4">
@@ -43,7 +56,7 @@ https://unpkg.com/vue@3/dist/vue.global.js"
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 
 const props = defineProps<{
   cdnLinks: string[];
@@ -56,10 +69,38 @@ const emit = defineEmits(['update:cdnLinks', 'update:editorTheme', 'close']);
 const localCdnLinks = ref('');
 const localEditorTheme = ref(props.editorTheme);
 
+// 常用CDN库列表
+const commonCdns = [
+  { name: 'Vue 3', url: 'https://unpkg.com/vue@3/dist/vue.global.js' },
+  { name: 'Tailwind CSS', url: 'https://cdn.tailwindcss.com' },
+  { name: 'Moment.js', url: 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js' },
+  { name: 'Lodash', url: 'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js' },
+  { name: 'Axios', url: 'https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js' },
+  { name: 'jQuery', url: 'https://code.jquery.com/jquery-3.6.0.min.js' }
+];
+
+// 添加CDN链接
+const addCdn = (url: string) => {
+  const currentLinks = localCdnLinks.value.split('\n').map(link => link.trim()).filter(Boolean);
+  if (!currentLinks.includes(url)) {
+    localCdnLinks.value = localCdnLinks.value ? `${localCdnLinks.value}\n${url}` : url;
+  }
+};
+
 // 初始化本地状态
 onMounted(() => {
   localCdnLinks.value = props.cdnLinks.join('\n');
 });
+
+// 验证URL
+const isValidUrl = (url: string): boolean => {
+  try {
+    new URL(url);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
 
 // 保存设置
 const saveSettings = () => {
@@ -69,7 +110,13 @@ const saveSettings = () => {
     .map(link => link.trim())
     .filter(link => link !== '');
   
-  emit('update:cdnLinks', links);
+  // 验证URL
+  const validLinks = links.filter(link => isValidUrl(link));
+  if (validLinks.length !== links.length) {
+    alert('有一些URL格式不正确，已自动过滤');
+  }
+  
+  emit('update:cdnLinks', validLinks);
   emit('update:editorTheme', localEditorTheme.value);
   emit('close');
 };

@@ -18,7 +18,7 @@
         <iframe 
           ref="previewFrame" 
           class="w-full h-full border-0" 
-          sandbox="allow-scripts allow-same-origin"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads"
           title="代码预览"
         ></iframe>
       </div>
@@ -143,9 +143,9 @@ const updatePreview = (htmlContent: string) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vue组件预览</title>`;
           
-          // 添加所有CDN链接
+          // 添加所有CDN链接，并添加错误处理
           cdnLinks.value.forEach(link => {
-            headContent += `\n  <script src="${link}"><\/script>`;
+            headContent += `\n  <script src="${link}" onerror="console.error('Failed to load: ${link}')"><\/script>`;
           });
           
           // 添加样式
@@ -238,15 +238,49 @@ const updatePreview = (htmlContent: string) => {
         // 普通HTML的渲染模式，添加用户自定义的CDN链接
         const headEndIndex = htmlContent.indexOf('</head>');
         if (headEndIndex !== -1) {
-          // 在</head>前插入所有CDN链接
+          // 在</head>前插入所有CDN链接，并添加错误处理
           let cdnScripts = '';
           cdnLinks.value.forEach(link => {
-            cdnScripts += `\n  <script src="${link}"><\/script>`;
+            cdnScripts += `\n  <script src="${link}" onerror="console.error('Failed to load: ${link}')"><\/script>`;
           });
           
           contentToRender = htmlContent.slice(0, headEndIndex) + cdnScripts + htmlContent.slice(headEndIndex);
+        } else {
+          // 如果没有</head>标签，创建一个基本的HTML结构
+          let cdnScripts = '';
+          cdnLinks.value.forEach(link => {
+            cdnScripts += `\n  <script src="${link}" onerror="console.error('Failed to load: ${link}')"><\/script>`;
+          });
+          
+          contentToRender = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>预览</title>${cdnScripts}
+</head>
+<body>
+${htmlContent}
+</body>
+</html>`;
         }
       }
+      
+      // 添加调试信息，帮助排查CDN加载问题
+      contentToRender = contentToRender.replace('</body>', `
+  <script>
+    console.log('Loaded CDN resources:', {
+      links: ${JSON.stringify(cdnLinks.value)}
+    });
+    // 检查特定库是否成功加载
+    setTimeout(() => {
+      const loadedLibs = [];
+      if (typeof Vue !== 'undefined') loadedLibs.push('Vue');
+      if (typeof moment !== 'undefined') loadedLibs.push('moment');
+      console.log('Successfully loaded libraries:', loadedLibs);
+    }, 500);
+  <\/script>
+</body>`);
       
       iframeDocument.open();
       iframeDocument.write(contentToRender);
