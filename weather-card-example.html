@@ -1,7 +1,4 @@
-/**
- * 默认HTML模板
- */
-export const defaultHtmlTemplate = `<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -493,9 +490,9 @@ export const defaultHtmlTemplate = `<!DOCTYPE html>
             for (let i = 0; i < 30; i++) {
                 const raindrop = document.createElement('div');
                 raindrop.className = 'raindrop';
-                raindrop.style.left = Math.random() * 100 + '%';
-                raindrop.style.animationDuration = (1 + Math.random() * 1) + 's';
-                raindrop.style.animationDelay = Math.random() * 2 + 's';
+                raindrop.style.left = `${Math.random() * 100}%`;
+                raindrop.style.animationDuration = `${1 + Math.random() * 1}s`;
+                raindrop.style.animationDelay = `${Math.random() * 2}s`;
                 rainContent.appendChild(raindrop);
             }
             
@@ -503,14 +500,14 @@ export const defaultHtmlTemplate = `<!DOCTYPE html>
             for (let i = 0; i < 8; i++) {
                 const puddle = document.createElement('div');
                 puddle.className = 'puddle';
-                puddle.style.left = (20 + Math.random() * 60) + '%';
-                puddle.style.animationDelay = Math.random() * 3 + 's';
+                puddle.style.left = `${20 + Math.random() * 60}%`;
+                puddle.style.animationDelay = `${Math.random() * 3}s`;
                 rainContent.appendChild(puddle);
             }
         }
         
-      // Create and position snowflakes
-      function createSnowflakes() {
+// Create and position snowflakes
+function createSnowflakes() {
             const snowContent = document.getElementById('snow-content');
             // Clear existing snowflakes
             const existingSnowflakes = snowContent.querySelectorAll('.snowflake');
@@ -521,10 +518,10 @@ export const defaultHtmlTemplate = `<!DOCTYPE html>
                 const snowflake = document.createElement('div');
                 snowflake.className = 'snowflake';
                 snowflake.innerHTML = '❄';
-                snowflake.style.left = Math.random() * 100 + '%';
-                snowflake.style.animationDuration = (3 + Math.random() * 5) + 's';
-                snowflake.style.animationDelay = Math.random() * 5 + 's';
-                snowflake.style.fontSize = (10 + Math.random() * 10) + 'px';
+                snowflake.style.left = `${Math.random() * 100}%`;
+                snowflake.style.animationDuration = `${3 + Math.random() * 5}s`;
+                snowflake.style.animationDelay = `${Math.random() * 5}s`;
+                snowflake.style.fontSize = `${10 + Math.random() * 10}px`;
                 snowContent.appendChild(snowflake);
             }
         }
@@ -595,58 +592,3 @@ export const defaultHtmlTemplate = `<!DOCTYPE html>
     </script>
 </body>
 </html>
-`;
-
-/**
- * 空白HTML模板
- */
-export const emptyHtmlTemplate = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    /* 在这里添加CSS */
-  </style>
-</head>
-<body>
-  <!-- 在这里添加HTML内容 -->
-  
-  <script>
-    // 在这里添加JavaScript
-  </script>
-</body>
-</html>`;
-
-/**
- * 基础Vue组件模板
- */
-export const vueComponentTemplate = `<template>
-  <div>
-    <h1>{{ title }}</h1>
-    <p>{{ message }}</p>
-    <button @click="count++">点击了 {{ count }} 次</button>
-  </div>
-</template>
-
-<script setup>
-import { ref } from 'vue'
-
-const title = ref('Vue 组件')
-const message = ref('这是一个Vue组件示例')
-const count = ref(0)
-</script>
-
-<style scoped>
-h1 {
-  color: #42b883;
-}
-button {
-  background-color: #42b883;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-</style>`; 
